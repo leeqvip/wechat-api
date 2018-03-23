@@ -22,9 +22,7 @@ class User extends AbstractHandler
      */
     public function get($nextOpenid = null)
     {
-        $data = [
-            'access_token' => $this->getToken(),
-        ];
+        $data = [];
         if ($nextOpenid != null) {
             $data['next_openid'] = $nextOpenid;
         }
@@ -45,7 +43,6 @@ class User extends AbstractHandler
     public function info($openid, $lang = 'zh_CN')
     {
         $data = [
-            'access_token' => $this->getToken(),
             'openid' => $openid,
             'lang' => $lang,
         ];

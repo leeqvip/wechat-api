@@ -2,6 +2,7 @@
     "name": "techleeone/wechat-api",
     "description": "wechat api for php,微信公众平台接口",
     "keywords": ["wechat", "微信公众平台接口"],
+    "license": "MIT",
     "authors": [
         {
             "name": "TechLee",
