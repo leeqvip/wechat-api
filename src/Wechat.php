@@ -9,6 +9,7 @@ use TechOne\WechatApi\Handlers\Tags;
 use TechOne\WechatApi\Handlers\User;
 use TechOne\WechatApi\Handlers\Oauth2;
 
+
 /**
  * 微信公众平台Api
  *
@@ -23,6 +24,7 @@ class Wechat
      */
     public static $instance = null;
 
+    public $debug = false;
     /**
      * appID
      * @var string
@@ -47,7 +49,6 @@ class Wechat
      * @var string
      */
     protected $redirectUri = '';
-
 
     public function __construct(array $config = [])
     {
@@ -77,6 +78,7 @@ class Wechat
         $this->appId = isset($config['app_id']) ? $config['app_id'] : '';
         $this->secret = isset($config['secret']) ? $config['secret'] : '';
         $this->token = isset($config['token']) ? $config['token'] : '';
+        $this->debug = isset($config['debug']) ? $config['debug'] : $this->debug;
         $this->setRedirectUri($this->getCurrentUrl());
     }
 
@@ -188,7 +190,7 @@ class Wechat
      */
     public function postJson($url, array $data)
     {
-        $data = Tool::json($data);
+        $data = Helper::json($data);
         return $this->response(
             Request::post($url)
                 ->sendsJson()
@@ -225,7 +227,6 @@ class Wechat
         return 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     }
 
-
     /**
      * 响应微信发送的Token验证
      */
@@ -238,7 +239,46 @@ class Wechat
         $tmpArr = [$this->token, $timestamp, $nonce];
         sort($tmpArr, SORT_STRING);
         $tmpStr = sha1(implode($tmpArr));
-        $echostr = $signature == $tmpStr ? $echostr : '';
-        exit($echostr);
+        $vaild = $signature == $tmpStr;
+        $this->log($vaild ? '验证通过' : '验证失败');
+        exit($vaild ? $echostr : '');
+    }
+
+    /**
+     * 是否是get请求
+     *
+     * @return bool
+     */
+    public function isGet()
+    {
+        return isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET';
+    }
+
+    /**
+     *
+     * @param $message
+     */
+    public function log($message)
+    {
+        if ($this->debug) {
+            Log::info($message);
+        }
+    }
+
+    /**
+     * 微信token验证|消息接收
+     *
+     * @return Messages\EventMessage|Messages\ImageMessage|Messages\LinkMessage|Messages\LocationMessage|Messages\ShortVideoMessage|Messages\TextMessage|Messages\VideoMessage|Messages\VoiceMessage
+     */
+    public function access()
+    {
+        if ($this->isGet()) {
+            $this->checkSignature();
+        } else {
+            $input = file_get_contents('php://input');
+            $message = Message::load($input);
+            $this->log($message);
+            return $message;
+        }
     }
 }
