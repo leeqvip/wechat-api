@@ -47,22 +47,4 @@ class Oauth2 extends AbstractHandler
         $token = Provider::create($config, 'wechat')->getAccessToken();
         return $token;
     }
-
-    /**
-     *
-     * @param string $scope
-     */
-    public function geToauth2Code($scope = 'snsapi_userinfo')
-    {
-        $query = http_build_query([
-            'appid' => $this->wechat->getAppId(),
-            'redirect_uri' => $this->wechat->getRedirectUri(),
-            'response_type' => 'code',
-            'scope' => $scope,
-            'status' => 'STATE',
-        ]);
-        $url = "https://open.weixin.qq.com/connect/oauth2/authorize?" . $query . "#wechat_redirect";
-        header('Location: ' . $url);
-        exit();
-    }
 }
