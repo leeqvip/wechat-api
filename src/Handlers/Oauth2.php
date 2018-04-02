@@ -2,6 +2,8 @@
 
 namespace TechOne\WechatApi\Handlers;
 
+use TechOne\OAuth2\Client\Provider;
+
 /**
  * 网页授权
  * Class Oauth2
@@ -35,17 +37,15 @@ class Oauth2 extends AbstractHandler
      */
     public function getToauth2Token()
     {
-        if (!isset($_GET['code'])) {
-            $this->geToauth2Code();
-        }
-        $query = http_build_query([
-            'appid' => $this->wechat->getAppId(),
-            'secret' => $this->wechat->getSecret(),
-            'code' => $_GET['code'],
-            'grant_type' => 'authorization_code',
-        ]);
-        $url = "https://api.weixin.qq.com/sns/oauth2/access_token?" . $query;
-        return $this->wechat->getJson($url);
+        $config = [
+            'client_id' => $this->wechat->getAppId(),
+            'client_secret' => $this->wechat->getSecret(),
+            'redirect_uri' => $this->wechat->getRedirectUri(),
+            'authorize_url' => 'https://open.weixin.qq.com/connect/oauth2/authorize',
+            'access_token_url' => 'https://api.weixin.qq.com/sns/oauth2/access_token',
+        ];
+        $token = Provider::create($config, 'wechat')->getAccessToken();
+        return $token;
     }
 
     /**

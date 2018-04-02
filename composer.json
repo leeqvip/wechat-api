@@ -12,7 +12,8 @@
     "require": {
         "php": ">=5.4.0",
         "nategood/httpful": "0.2.*",
-        "monolog/monolog": "^1.23"
+        "monolog/monolog": "^1.23",
+        "techleeone/oauth2-client": "^1.0.1"
     },
     "autoload": {
         "psr-4": {
