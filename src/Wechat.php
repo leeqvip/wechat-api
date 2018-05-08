@@ -111,7 +111,7 @@ class Wechat
      * 授权后重定向的回调链接地址， 请使用 urlEncode 对链接进行处理
      * @param string $redirectUri
      */
-    public function setRedirectUri(string $redirectUri)
+    public function setRedirectUri($redirectUri)
     {
         $this->redirectUri = $redirectUri;
     }
